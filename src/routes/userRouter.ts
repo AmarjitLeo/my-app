@@ -1,14 +1,11 @@
-import express from 'express';
-import { create ,  getUsers , updateUser , deleteUser , getUserById} from '../controller/usersController'
+import proxy from "../service/appServiceProxy";
 import { userRoutes } from '../helper/routes';
-const router = express.Router()
 
+const userRoute = async (app: any) => {
+    app.get(userRoutes.UsersRoute , proxy.user.getUsers);
+	app.post(userRoutes.UsersRoute , proxy.user.create);
+	// app.post("/user/login", proxy.user.login);
+	app.get(userRoutes.UserByIdRoute , proxy.user.getUserById);
+};
 
-router.get(userRoutes.UsersRoute , getUsers )
-router.get(userRoutes.UserByIdRoute , getUserById)
-router.post(userRoutes.UsersRoute , create)
-
-router.post(userRoutes.UserByIdRoute , updateUser )
-
-router.delete(userRoutes.UserByIdRoute , deleteUser )
-export { router as userRouter}
+export default userRoute;
