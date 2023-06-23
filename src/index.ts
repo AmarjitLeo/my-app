@@ -1,38 +1,26 @@
 import express from 'express';
-import http from 'http';
+import { Server } from './helper/server';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import compression from "compression";
 import mongoose from "mongoose";
 import cors from 'cors';
-
 import { userRouter } from './routes/userRouter'
-
 const app = express();
-
-app.use(cors({
+import dotenv from 'dotenv';
+dotenv.config();
+const Port = process.env.PORT;
+const server = new Server(Number(Port));
+server.addMiddleware(cors({
     credentials: true
-}));
+}))
+server.addMiddleware(compression())
+server.addMiddleware(cookieParser())
+server.addMiddleware(bodyParser.json())
+server.addMiddleware(userRouter)
+server.start();
 
-app.use(compression())
-
-app.use(cookieParser())
-
-app.use(bodyParser.json())
-
-app.use(userRouter);
-
-app.get('/',(req,res) =>{
-    res.send("basic crud")
-})
-
-const server = http.createServer(app)
-server.listen(3000 , () => {
-    console.log("server is connected!!!")
-})
-
-const MONGO_URL = "mongodb+srv://amarjeetsingh:hl70HFIFMEhPwgJl@cluster0.tjqtwkl.mongodb.net/?retryWrites=true&w=majority"
 mongoose.Promise = Promise
-mongoose.connect(MONGO_URL)
+mongoose.connect(process.env.MONGO_URL)
 mongoose.connection.on('error', (error: Error) => console.log(error))
 

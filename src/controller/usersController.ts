@@ -1,60 +1,38 @@
 import express from "express";
 import mongoose from "mongoose";
 import { UserModel } from '../db/users';
+import { apiResponse } from "../helper/apiResonse";
 
-export const create = async (req: express.Request , res: express.Response) => {
-    try{
-        const { firstname , lastname ,  email , password} = req.body;
-
-        if( !firstname || !lastname ||  !email || !password){
-            return  res.status(400).json({
-                message: "bad request",
-                status: false
-            })
+export const create = async (req: express.Request, res: express.Response) => {
+    try {
+        const { firstname, lastname, email, password } = req.body;
+        if (!firstname || !lastname || !email || !password) {
+            return await apiResponse(res, 400, "bad request", null, false, null)
         }
-
         let user: any = await UserModel.findOne({ email });
-        if(user){
-            return  res.status(500).json({
-                message: "user already exists!",
-                status: false
-            }) 
+        if (user) {
+            return await apiResponse(res, 500, "user already exists!", null, false, null)
         }
-
         // await UserModel.create({ firstname , lastname ,  email , password});
-        let createdUser: any =  new UserModel({ firstname , lastname ,  email , password})
+        let createdUser: any = new UserModel({ firstname, lastname, email, password })
 
         await createdUser.save();
-        return  res.status(200).json({
-            message: "User created succesfully!",
-            user: createdUser,
-            status: true
-        }) 
+        return await apiResponse(res, 200, "User created succesfully!", createdUser, true, null)
 
-     }catch(error){
+    } catch (error) {
         console.log(error)
-        return res.status(400).json({
-            message: "internal error in api!",
-            status: false
-        })
+        return await apiResponse(res, 500, "internal error in api!", null, false, error)
     }
 }
 
 export const getUsers = async (req: express.Request , res: express.Response) => {
     try{
         let users: any = await UserModel.find();
-        return res.status(200).json({
-            message: "users fetched succesfully!",
-            users,
-            status: true
-        })
+        return await apiResponse(res, 200, "users fetched succesfully!", users, true, null)
 
     }catch(error){
         console.log(error)
-        return res.status(400).json({
-            message: "internal error in api!",
-            status: false
-        })
+        return await apiResponse(res, 500, "internal error in api!", null , false, error)
     }
 }
 
@@ -62,20 +40,13 @@ export const updateUser = async (req: express.Request , res: express.Response) =
     try{
         let id:any = req.params.id;
         let payload: any = req.body;
-
         await UserModel.findOneAndUpdate({_id: id} , payload);
-
-        return res.status(200).json({
-            message: "user updated succesfully!",
-            status: true
-        })
+        payload.id = req.params.id;
+        return await apiResponse(res, 200, "user updated succesfully!", payload , true , null)
         
     }catch(error){
         console.log(error)
-        return res.status(400).json({
-            message: "internal error in api!",
-            status: false
-        })
+        return await apiResponse(res, 500, "internal error in api!", null , false , error)
     }
 }
 
@@ -84,36 +55,22 @@ export const getUserById = async (req: express.Request , res: express.Response) 
         let id:any = req.params.id;
         
         let user: any = await UserModel.findOne({_id: id});
-        return res.status(200).json({
-            message: "user fetched succesfully!",
-            user,
-            status: true
-        })
+        return await apiResponse(res, 200, "user fetched succesfully!", user , true , null)
         
     }catch(error){
         console.log(error)
-        return res.status(400).json({
-            message: "internal error in api!",
-            status: false
-        })
+        return await apiResponse(res, 500, "internal error in api!", null , false , error)
     }
 }
 
 export const deleteUser = async (req: express.Request , res: express.Response) => {
     try{
         let id:any = req.params.id;
-        
         let user: any = await UserModel.findOneAndDelete({_id: id});
-        return res.status(200).json({
-            message: "user deleted succesfully!",
-            status: true
-        })
+        return await apiResponse(res, 200, "user deleted succesfully!", {id} , true , null)
         
     }catch(error){
         console.log(error)
-        return res.status(400).json({
-            message: "internal error in api!",
-            status: false
-        })
+        return await apiResponse(res, 500, "internal error in api!", null , false , error)
     }
 }
