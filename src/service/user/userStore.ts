@@ -25,7 +25,7 @@ export default class UserStore {
 	 */
 	public async getByEmail(email: string): Promise<IUSER> {
 		try {
-			let user: any = await UserModel.findOne({ email });
+			let user: any = (await UserModel.findOne({ email }));
 			return user;
 		} catch (e) {
 			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());
@@ -44,10 +44,10 @@ export default class UserStore {
 		}
 	}
 
-	public async getAll(): Promise<IUSER> {
+	public async getAll(): Promise<IUSER[]> {
 		try {
 			let users: any = await UserModel.find();
-			return users;
+			return users
 		} catch (e) {
 			return Promise.reject(new UserStore.OPERATION_UNSUCCESSFUL());
 		}

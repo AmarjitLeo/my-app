@@ -17,7 +17,7 @@ export default class UserService implements IUserService.IUserServiceAPI {
 		this.proxy = proxy;
 	}
 
-	public create = async (
+	public create = async  (
 		request: IUserService.IRegisterUserRequest,
 		res: IUserService.IRegisterUserResponse,
 	) => {
@@ -76,16 +76,12 @@ export default class UserService implements IUserService.IUserServiceAPI {
 		const response: IUserService.IRegisterUserResponse = {
 			status: STATUS_CODES.UNKNOWN_CODE,
 		};
-		
 		try{
-			
-			const users = await this.userStore.getAll();
-			return apiResponse(res, STATUS_CODES.OK, responseMessage.USERS_FETCHED,  response , true , null)
-			
+			const users: IUSER[] = await this.userStore.getAll();
+			return apiResponse(res, STATUS_CODES.OK, responseMessage.USERS_FETCHED,  users , true , null)
 	
 		}catch(e){
 			console.log(e)
-
 			return apiResponse(res, STATUS_CODES.INTERNAL_SERVER_ERROR, ErrorMessageEnum.INTERNAL_ERROR,  response , false , toError(e.message))
 			// return apiResponse(res, STATUS_CODES.OK, responseMessage.USER_CREATED,  response , true , null)
 			
@@ -173,8 +169,6 @@ export default class UserService implements IUserService.IUserServiceAPI {
 		}
 
 		const { id } = params.value;
-
-	
 		let user: IUSER;
 		try {
 			user = await this.userStore.getById(id);

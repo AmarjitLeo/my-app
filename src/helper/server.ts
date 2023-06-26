@@ -42,5 +42,8 @@ export class Server {
       console.log(`Server listening on port ${this.port}`);
     });
   }
+  public getApp(){
+    return this.app
+  }
 }
 
